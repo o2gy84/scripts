@@ -24,7 +24,8 @@ import subprocess
 import fcntl
 
 
-g_SESSIONS = []
+g_SESSIONS = {}
+g_SESSION_EXPIRATION_TIME = 60 * 5
 g_MAIN_URL = "http://195.19.44.139:5000"
 g_ADMIN = 'admin'
 g_PASSWORD = '1'
@@ -79,7 +80,7 @@ def send_problems_list(s):
     s.wfile.write("</table>")
 
     session_id = generate_id()
-    g_SESSIONS.append(session_id)
+    g_SESSIONS[session_id] = time.time()
     
     load_form = """
     <br>
@@ -136,7 +137,10 @@ def check_login(s):
 
 def check_session_id(session_id):
 
-    # TODO: sessions expiration time
+    now = time.time()
+    for sid, creation_time in g_SESSIONS.items():
+        if (now - creation_time > g_SESSION_EXPIRATION_TIME):
+            del g_SESSIONS[sid]
 
     if session_id in g_SESSIONS:
         return True
@@ -178,6 +182,9 @@ def check_url(s):
     return True
 
 def clear_upload_temp_directory():
+    if not os.path.exists(g_TEMP_DIR):
+        os.makedirs(g_TEMP_DIR)
+
     for file_object in os.listdir(g_TEMP_DIR):
         file_object_path = os.path.join(g_TEMP_DIR, file_object)
         if os.path.isfile(file_object_path):
