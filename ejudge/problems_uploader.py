@@ -227,7 +227,7 @@ def move_problems(req):
             regenerate_tests(original_problems_path)
             moved_problems += 1
 
-    if moved_problems > 0:      # need to restert system
+    if moved_problems > 0:      # need to restart system
         restart_ejudge()
 
     return True
@@ -245,7 +245,7 @@ def load_archive(req):
         send_problems_list(req)
         return
 
-    re_targz = re.compile('.*\.tar.gz')
+    re_targz = re.compile('.*\.tar\.gz')
     re_zip = re.compile('.*\.zip')
     is_tar = is_zip = False
 
@@ -274,7 +274,7 @@ def load_archive(req):
         return
     send_problems_list(req)
 
-class UploadHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class UploaderHttpRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(s):
         """Respond to a GET request."""
@@ -358,7 +358,7 @@ if __name__ == '__main__':
 
     clear_upload_temp_directory()
 
-    httpd = BaseHTTPServer.HTTPServer((options.host, options.port), UploadHandler)
+    httpd = BaseHTTPServer.HTTPServer((options.host, options.port), UploaderHttpRequestHandler)
     fcntl.fcntl(httpd.socket, fcntl.F_SETFD, fcntl.FD_CLOEXEC)  # after Popen() need to close sockets
 
     try:
