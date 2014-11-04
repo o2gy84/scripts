@@ -86,13 +86,11 @@ def send_problems_list(s):
     s.wfile.write("<html><head><meta charset='utf-8'><title>Loaded tests</title></head>")
     s.wfile.write("<body><p>Tests are loaaded:</p><table border='1'>")
 
-    some = "_"
-
     ejudge = Ejudge()
     problems = ejudge.get_problems()
     problems.sort()
     for problem in problems:
-        s.wfile.write("<tr><td> %s </td><td> %s </td><td> %s </td></tr>" % (problem.number(), problem.description(), some))
+        s.wfile.write("<tr><td> %s </td><td> %s </td><td> tests count: %s </td></tr>" % (problem.number(), problem.description(), problem.test_count(),))
     s.wfile.write("</table>")
 
     session_id = generate_id()
@@ -334,17 +332,25 @@ class Ejudge():
             except:
                 continue
 
-            problem = EjudgeProblem(name)
+            # count of tests
+            tests_count = 0
+            dir_with_test = os.path.join(self.problems_path, task_folder, 'tests')
+            for test_file in os.listdir(dir_with_test):
+                if (re.match('.*\.dat$', test_file)):
+                    tests_count += 1
+
+            problem = EjudgeProblem(name, tests_count)
             problems.append(problem)
 
         return problems
 
 class EjudgeProblem():
-    def __init__(self, _description):
+    def __init__(self, _description, _tests_count):
         # description like 'B-1. Форматирование сток с тэгом div'
         self.integer_num = 1
         self.character = 'A'
         self.desc = "undef"
+        self.tests_count = _tests_count
         arr = _description.split('.')
         if (len(arr[0]) > 0):
             tmp = arr[0].split('-')
@@ -358,6 +364,9 @@ class EjudgeProblem():
 
     def description(self):
         return self.desc
+
+    def test_count(self):
+        return self.tests_count
 
     def __cmp__(self, other):
         if self.character == other.character:
