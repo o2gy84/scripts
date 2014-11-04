@@ -131,6 +131,13 @@ def send_bad_archive_response(req):
     req.wfile.write("<p>something wrong with your archive - no test founded in archive root directory</p>")
     req.wfile.write("<br><a href='{0}'>main</a>".format(get_config('main_url')))
 
+def send_bad_configuration(req):
+    req.send_response(500)
+    req.send_header("Content-type", "text/html")
+    req.end_headers()
+    req.wfile.write("<p>something wrong with server configuration. call to admin</p>")
+    req.wfile.write("<br><a href='{0}'>main</a>".format(get_config('main_url')))
+
 def check_login(s):
     """ check login received via POST method """
     length = s.headers['content-length']
@@ -254,6 +261,10 @@ def load_archive(req):
         environ={'REQUEST_METHOD':'POST', 'CONTENT_TYPE':req.headers['Content-Type'],}
     )
 
+    if not os.path.exists(get_config('problems_path')):
+        send_bad_configuration(req)
+        return
+
     item = form['archive']
     if (not item.filename):
         send_problems_list(req)
@@ -320,6 +331,10 @@ class Ejudge():
 
     def get_problems(self):
         problems = []
+        if not os.path.exists(self.problems_path):
+            print "[ERROR] folder with problems not exist:", self.problems_path
+            return problems
+
         for task_folder in os.listdir(self.problems_path):
 
             # A-1 / description.txt
