@@ -19,6 +19,7 @@ import random
 
 import tarfile
 import zipfile
+import hashlib
 
 import subprocess
 import fcntl
@@ -32,9 +33,14 @@ g_DEFAULT_CONFIG_FILE = "problems_uploader.conf"
 g_DEFAULT_CONFIG_SECTION = "DEFAULT"
 g_DEFAULT_PASS = 'admin'
 
+def get_md5(data):
+    m = hashlib.md5()
+    m.update(data)
+    return m.hexdigest()
+
 g_CONFIG = SafeConfigParser(defaults={
     'admin': 'admin',
-    'password': g_DEFAULT_PASS,
+    'password': get_md5(g_DEFAULT_PASS),
     'port': '5000',
     'host': 'localhost',
     'session_expiration_time': '300',
@@ -150,7 +156,7 @@ def check_login(s):
 
     #pprint (query_string)
     
-    if (query_string['login'] == get_config('admin') and query_string['password'] == get_config('password')):
+    if (query_string['login'] == get_config('admin') and get_md5(query_string['password']) == get_config('password')):
         return True
 
     send_no_permission(s)
@@ -410,7 +416,8 @@ if __name__ == '__main__':
         check_default_config()
 
     g_CONFIG.read(options.config or g_DEFAULT_CONFIG_PATH + g_DEFAULT_CONFIG_FILE)
-    if get_config('password') == g_DEFAULT_PASS:
+
+    if (get_config('password') == get_md5(g_DEFAULT_PASS)):
         print "Please set a different password in the configuration file"
         print "Use the default password is prohibited"
         sys.exit(1)
