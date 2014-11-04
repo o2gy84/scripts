@@ -4,7 +4,7 @@ Scripts for manage ejudge. BMSTU edition.
     init.d-like wrapper for ej processes (he fault sometimes),
     and for problems_uploader server
 
-2) restart-ej.sh
+2) restart-ej-contest.sh
     contest restarter - fast applay changes variant.map, test e.t.c.
 
 3) tests_normalizer.pl
@@ -17,3 +17,9 @@ Scripts for manage ejudge. BMSTU edition.
 5) problems_uploader.py
     simple web server for auto loading new problems in contest
 
+
+TODO:
+1) кажется, можно не рестартить весь еджадж для подгрузки новых задач,
+   а достаточно запустить ./restart-ej-contest.sh
+
+2) архиватор-бекапер
