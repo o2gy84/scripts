@@ -332,20 +332,21 @@ class UploaderHttpRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 class Ejudge():
     """ read directory with problems. need Description.xml and description.txt files """
-    problems_path = get_config('problems_path')
     delimiter = '%%'
 
     def get_problems(self):
+        # TODO: set problems path as parameter ?
+        problems_path = get_config('problems_path')
         problems = []
-        if not os.path.exists(self.problems_path):
-            print "[ERROR] folder with problems not exist:", self.problems_path
+        if not os.path.exists(problems_path):
+            print "[ERROR] folder with problems not exist:", problems_path
             return problems
 
-        for task_folder in os.listdir(self.problems_path):
+        for task_folder in os.listdir(problems_path):
 
             # A-1 / description.txt
-            problem_file = os.path.join(self.problems_path, task_folder, get_config('user_problem_description_file'))
-            problem_file_in_ejudge_format = os.path.join(self.problems_path, task_folder, get_config('ejudge_problem_description_file'))
+            problem_file = os.path.join(problems_path, task_folder, get_config('user_problem_description_file'))
+            problem_file_in_ejudge_format = os.path.join(problems_path, task_folder, get_config('ejudge_problem_description_file'))
             try:
                 open(problem_file_in_ejudge_format)
                 problem_desc = open(problem_file).read()
@@ -355,7 +356,7 @@ class Ejudge():
 
             # count of tests
             tests_count = 0
-            dir_with_test = os.path.join(self.problems_path, task_folder, 'tests')
+            dir_with_test = os.path.join(problems_path, task_folder, 'tests')
             for test_file in os.listdir(dir_with_test):
                 if (re.match('.*\.dat$', test_file)):
                     tests_count += 1
