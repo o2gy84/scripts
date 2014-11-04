@@ -23,19 +23,35 @@ import zipfile
 import subprocess
 import fcntl
 
+from ConfigParser import SafeConfigParser
+
 
 g_SESSIONS = {}
-g_SESSION_EXPIRATION_TIME = 60 * 5
-g_MAIN_URL = "http://195.19.44.139:5000"
-g_ADMIN = 'admin'
-g_PASSWORD = '1'
-g_PROBLEMS_PATH = "/home/ejudge/tmp/problems/"
-g_TEMP_DIR = "/home/ejudge/tmp/upload/"
-g_USER_PROBLEM_DESCRIPTION_FILE = 'description.txt'
-g_EJUDGE_PROBLEM_DESCRIPTION_FILE = 'Description.xml'
-g_DESCRIPTION_GENERATOR = '/home/ejudge/scrips/generate_description.py'
-g_EJUDGE_CONTROL = '/home/ejudge/inst-ejudge/bin/ejudge-control'
+g_DEFAULT_CONFIG_PATH = "/home/ejudge/etc/"
+g_DEFAULT_CONFIG_FILE = "problems_uploader.conf"
+g_DEFAULT_CONFIG_SECTION = "DEFAULT"
+g_DEFAULT_PASS = 'admin'
 
+g_CONFIG = SafeConfigParser(defaults={
+    'admin': 'admin',
+    'password': g_DEFAULT_PASS,
+    'port': '5000',
+    'host': 'localhost',
+    'session_expiration_time': '300',
+    'main_url': 'http://195.19.44.139:5000',
+    'problems_path': '/home/ejudge/tmp/problems/',
+    'upload_dir': '/home/ejudge/tmp/upload/',
+    'user_problem_description_file': 'description.txt',
+    'ejudge_problem_description_file': 'Description.xml',
+    'description_generator_script': '/home/ejudge/inst-ejudge-scrips/generate_description.py',
+    'ejudge_control_script': '/home/ejudge/inst-ejudge/bin/ejudge-control',
+})
+
+def get_config(key):
+    return g_CONFIG.get(g_DEFAULT_CONFIG_SECTION, key)
+
+def get_config_int(key):
+    return g_CONFIG.getint(g_DEFAULT_CONFIG_SECTION, key)
 
 def generate_id(size=12, chars=string.ascii_uppercase + string.digits):
     """ session id generating """
@@ -55,7 +71,7 @@ def send_registration_form(s):
         </form>
     </body>
 </html>
-    """.format(g_MAIN_URL)
+    """.format(get_config('main_url'))
     s.send_response(200)
     s.send_header("Content-type", "text/html")
     s.end_headers()
@@ -90,7 +106,7 @@ def send_problems_list(s):
             <p><input type="file" accept=".tar.gz,.zip" name="archive"></p>
             <p><input type="submit"></p>
         </form>
-    </div>""".format(g_MAIN_URL, session_id)
+    </div>""".format(get_config('main_url'), session_id)
 
     s.wfile.write(load_form)
     s.wfile.write("</body></html>")
@@ -101,21 +117,21 @@ def send_no_permission(s):
     s.send_header("Content-type", "text/html")
     s.end_headers()
     s.wfile.write("<p>permission denied</p>")
-    s.wfile.write("<br><a href='{0}'>main</a>".format(g_MAIN_URL))
+    s.wfile.write("<br><a href='{0}'>main</a>".format(get_config('main_url')))
 
 def send_not_found(s):
     s.send_response(404)
     s.send_header("Content-type", "text/html")
     s.end_headers()
     s.wfile.write("<p>resource not found</p>")
-    s.wfile.write("<br><a href='{0}'>main</a>".format(g_MAIN_URL))
+    s.wfile.write("<br><a href='{0}'>main</a>".format(get_config('main_url')))
 
 def send_bad_archive_response(req):
     req.send_response(400)
     req.send_header("Content-type", "text/html")
     req.end_headers()
     req.wfile.write("<p>something wrong with your archive - no test founded in archive root directory</p>")
-    req.wfile.write("<br><a href='{0}'>main</a>".format(g_MAIN_URL))
+    req.wfile.write("<br><a href='{0}'>main</a>".format(get_config('main_url')))
 
 def check_login(s):
     """ check login received via POST method """
@@ -129,7 +145,7 @@ def check_login(s):
 
     #pprint (query_string)
     
-    if (query_string['login'] == g_ADMIN and query_string['password'] == g_PASSWORD):
+    if (query_string['login'] == get_config('admin') and query_string['password'] == get_config('password')):
         return True
 
     send_no_permission(s)
@@ -139,7 +155,7 @@ def check_session_id(session_id):
 
     now = time.time()
     for sid, creation_time in g_SESSIONS.items():
-        if (now - creation_time > g_SESSION_EXPIRATION_TIME):
+        if (now - creation_time > get_config_int('session_expiration_time')):
             del g_SESSIONS[sid]
 
     if session_id in g_SESSIONS:
@@ -182,11 +198,11 @@ def check_url(s):
     return True
 
 def clear_upload_temp_directory():
-    if not os.path.exists(g_TEMP_DIR):
-        os.makedirs(g_TEMP_DIR)
+    if not os.path.exists(get_config('upload_dir')):
+        os.makedirs(get_config('upload_dir'))
 
-    for file_object in os.listdir(g_TEMP_DIR):
-        file_object_path = os.path.join(g_TEMP_DIR, file_object)
+    for file_object in os.listdir(get_config('upload_dir')):
+        file_object_path = os.path.join(get_config('upload_dir'), file_object)
         if os.path.isfile(file_object_path):
             os.unlink(file_object_path)
         else:
@@ -195,20 +211,20 @@ def clear_upload_temp_directory():
 
 def restart_ejudge():
     """ ./ejudge-control stop && ./ejudge-control start """
-    subprocess.Popen([g_EJUDGE_CONTROL, "stop"]).wait()
+    subprocess.Popen([ get_config('ejudge_control_script'), "stop"]).wait()
     time.sleep(0.1)
-    subprocess.Popen([g_EJUDGE_CONTROL, "start"]).wait()
+    subprocess.Popen([ get_config('ejudge_control_script'), "start"]).wait()
 
 def regenerate_tests(path):
     """ convert description.txt into Description.txt, and restart ejudge """
-    subprocess.call([g_DESCRIPTION_GENERATOR, path])    # blocking call
+    subprocess.call([ get_config('description_generator_script') , path])    # blocking call
 
 def move_problems(req):
     """ check and move loaded problems """
     checked_dirs = []
-    for f in os.listdir(g_TEMP_DIR):
+    for f in os.listdir(get_config('upload_dir')):
         if (re.match('^(A|B|C|D)-\d{1,2}$', f)):
-            problem_file = os.path.join(g_TEMP_DIR, f, g_USER_PROBLEM_DESCRIPTION_FILE)
+            problem_file = os.path.join(get_config('upload_dir'), f, get_config('user_problem_description_file'))
             try:
                 with open(problem_file) as pf:
                     checked_dirs.append(f)
@@ -221,9 +237,9 @@ def move_problems(req):
 
     moved_problems = 0
     for f in checked_dirs:
-        original_problems_path = g_PROBLEMS_PATH + f
+        original_problems_path = get_config('problems_path') + f
         if (not os.path.exists(original_problems_path)):
-            shutil.move(g_TEMP_DIR + f, original_problems_path)
+            shutil.move(get_config('upload_dir') + f, original_problems_path)
             regenerate_tests(original_problems_path)
             moved_problems += 1
 
@@ -258,16 +274,16 @@ def load_archive(req):
         return
 
     data = item.file.read()
-    with open(g_TEMP_DIR + item.filename, 'w') as f:
+    with open(get_config('upload_dir') + item.filename, 'w') as f:
         f.write(data)
 
     if is_tar:
-        tar = tarfile.open(g_TEMP_DIR + item.filename)
-        tar.extractall(g_TEMP_DIR)
+        tar = tarfile.open(get_config('upload_dir') + item.filename)
+        tar.extractall(get_config('upload_dir'))
         tar.close()
     elif is_zip:
-        zzip = zipfile.ZipFile(g_TEMP_DIR + item.filename)
-        zzip.extractall(g_TEMP_DIR)
+        zzip = zipfile.ZipFile(get_config('upload_dir') + item.filename)
+        zzip.extractall(get_config('upload_dir'))
         zzip.close()
 
     if (move_problems(req) == False):
@@ -301,7 +317,7 @@ class UploaderHttpRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 class Ejudge():
     """ read directory with problems. need Description.xml and description.txt files """
-    problems_path = g_PROBLEMS_PATH
+    problems_path = get_config('problems_path')
     delimiter = '%%'
 
     def get_problems(self):
@@ -309,8 +325,8 @@ class Ejudge():
         for task_folder in os.listdir(self.problems_path):
 
             # A-1 / description.txt
-            problem_file = os.path.join(self.problems_path, task_folder, g_USER_PROBLEM_DESCRIPTION_FILE)
-            problem_file_in_ejudge_format = os.path.join(self.problems_path, task_folder, g_EJUDGE_PROBLEM_DESCRIPTION_FILE)
+            problem_file = os.path.join(self.problems_path, task_folder, get_config('user_problem_description_file'))
+            problem_file_in_ejudge_format = os.path.join(self.problems_path, task_folder, get_config('ejudge_problem_description_file'))
             try:
                 open(problem_file_in_ejudge_format)
                 problem_desc = open(problem_file).read()
@@ -348,21 +364,40 @@ class EjudgeProblem():
             return cmp(self.integer_num, other.integer_num)
         return cmp(self.character, other.character)
 
+def check_default_config():
+    """ write default config """
+    if not os.path.exists(g_DEFAULT_CONFIG_PATH):
+        os.makedirs(g_DEFAULT_CONFIG_PATH)
+
+    conf_path = g_DEFAULT_CONFIG_PATH + g_DEFAULT_CONFIG_FILE
+
+    if not os.path.exists(conf_path):
+        g_CONFIG.write(open(conf_path, "w"))
+        print "Config file was saved at:", conf_path
+        print "Please specify settings and run script"
+        sys.exit(1)
 
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option("--port", "-p", help="listen port", dest="port", type=int, default=8080)
-    parser.add_option("--host", help="host for receved connections", dest="host", type=str, default="localhost")
-    parser.add_option("--printanswer", help="print server answers", action="store_true", dest="printanswer", default=False)
+    parser.add_option("--config", "-c", help="use a specific config instead of default", dest="config", metavar="FILE")
     (options, args) = parser.parse_args()
+
+    if (not options.config):
+        check_default_config()
+
+    g_CONFIG.read(options.config or g_DEFAULT_CONFIG_PATH + g_DEFAULT_CONFIG_FILE)
+    if get_config('password') == g_DEFAULT_PASS:
+        print "Please set a different password in the configuration file"
+        print "Use the default password is prohibited"
+        sys.exit(1)
 
     clear_upload_temp_directory()
 
-    httpd = BaseHTTPServer.HTTPServer((options.host, options.port), UploaderHttpRequestHandler)
+    httpd = BaseHTTPServer.HTTPServer((get_config('host'), get_config_int('port')), UploaderHttpRequestHandler)
     fcntl.fcntl(httpd.socket, fcntl.F_SETFD, fcntl.FD_CLOEXEC)  # after Popen() need to close sockets
 
     try:
-        print "start server on port:", options.port,", host:", options.host
+        print "start server on port:", get_config('port'),", host:", get_config('host')
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
