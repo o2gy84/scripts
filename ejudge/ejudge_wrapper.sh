@@ -1,10 +1,8 @@
 #!/bin/bash
-
 #author: v.mogilin, v.mogilin@corp.mail.ru
 
-BIN_PATH=/home/admin/inst-ejudge/bin/
+BIN_PATH=/home/ejudge/inst-ejudge/bin/
 EJ_USERS=ej-users
-EJ_USERS_RUN="${BIN_PATH}${EJ_USERS} -D -C /home/admin/judges /home/admin/judges/data/ejudge.xml"
 
 function is_running() {
 # returns 0, if process no running

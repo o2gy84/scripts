@@ -14,7 +14,7 @@ Scripts for manage ejudge. BMSTU edition.
     generate 'Description.xml' file for each test:
 	call: 'python generate_description.py ../judges/000001/problems/'
 
-5) problems_uploader.py
+5) ej-problems-uploader.py
     simple web server for auto loading new problems in contest
 
 
@@ -23,3 +23,6 @@ TODO:
    а достаточно запустить ./restart-ej-contest.sh
 
 2) архиватор-бекапер
+
+3) переделать wrapper, чтобы он следил и за ej-problems-uploader, и
+   использовал ejudge-control stop && ejudge-control start для рестарта
