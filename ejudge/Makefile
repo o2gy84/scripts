@@ -6,8 +6,8 @@ INSTALL_DIR=/home/ejudge/inst-ejudge-scrips
 
 EJ_WRAPPER=ejudge_wrapper.sh
 EJ_DESC_GENERATOR=generate_description.py
-EJ_PROBLEMS_UPLOADER=problems_uploader.py
-EJ_RESTART=restart-ej.sh
+EJ_PROBLEMS_UPLOADER=ej-problems-uploader.py
+EJ_RESTART=restart-ej-contest.sh
 EJ_TEST_NORMALIZER=tests_normalizer.pl
 
 user=$(shell whoami)
