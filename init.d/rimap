@@ -1,0 +1,75 @@
+#!/bin/bash
+#
+#       /etc/rc.d/init.d/rimap-collector
+#
+# Starts the at daemon
+#
+# chkconfig: 2345 80 20
+#
+# description: start script for collector
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+prog="collector"
+LOG="/var/log/collector.log"
+
+start() {
+        echo -n $"Starting $prog: "
+ulimit -n 650000
+ulimit -c unlimited
+
+        nohup /usr/local/bin/rimap-collector-wrapper.sh > /dev/null 2>/dev/null &
+#        nohup /usr/local/mpop/libexec/collector --proto=imap >> ${LOG} 2>&1 &
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/${prog} && echo -n " OK"
+        echo
+        return $RETVAL
+}
+
+stop() {
+        echo -n $"Stopping $prog: "
+#       pkill -f "/usr/local/mpop/libexec/collector --proto=imap"
+        kill -9 `cat /var/run/${prog}-wrapper.pid`
+        kill `cat /var/run/${prog}.pid`
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/${prog}
+        for SLEEP in 1 2 3 4 5; do
+                pgrep -f "/usr/local/mpop/libexec/collector --proto=imap" && pkill -9 -f "/usr/local/mpop/libexec/collector --proto=imap" || break
+                echo -n " ."
+                sleep 1
+        done
+        echo -n " OK"
+        echo
+        return $RETVAL
+}
+
+restart() {
+        stop
+        start
+}
+
+reload() {
+        restart
+}
+
+
+case "$1" in
+start)
+        start
+        ;;
+stop)
+        stop
+        ;;
+reload|restart)
+        restart
+        ;;
+*)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
+exit $RETVAL
+
