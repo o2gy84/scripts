@@ -36,7 +36,7 @@ else
 
 if(defined $ARGV[0] && $ARGV[0] > 0)
 {
-    my $q = $dbh->query("select rpop.imap.ID, rpop.imap.UserId, rpop.imap.UserEmail from rpop.imap where rpop.imap.ID = $ARGV[0]");
+    my $q = $dbh->query("select rpop.imap.ID, rpop.imap.UserId, rpop.imap.UserEmail from rpop.imap where rpop.imap.ID = $ARGV[0] and rpop.imap.flags&512");
     my @a = $q->fetchrow();
     if(scalar(@a) == 0)
     {
@@ -61,7 +61,7 @@ my $errors = 0;
 while( ($offset - $limit) < $max_id)
 {
     my $threshold = $offset + $limit;
-    my $q = $dbh->query("select rpop.imap.ID, rpop.imap.UserId, rpop.imap.UserEmail from rpop.imap where rpop.imap.ID >= $offset AND rpop.imap.ID < $threshold");
+    my $q = $dbh->query("select rpop.imap.ID, rpop.imap.UserId, rpop.imap.UserEmail from rpop.imap where rpop.imap.ID >= $offset AND rpop.imap.ID < $threshold and rpop.imap.flags&512");
 
     while(my @a = $q->fetchrow())
     {
