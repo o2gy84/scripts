@@ -17,7 +17,10 @@ Scripts for manage ejudge. BMSTU edition.
 5) ej-problems-uploader.py
     simple web server for auto loading new problems in contest
 
-6) TODO: make .csv student list from many xls files
+6) xls2csv.py
+    create one .csv file with students from several .xls files, in format
+    'login', 'email', 'name', 'password'
+    output file hardcoded to "/home/ejudge/test.csv"
 
 7) send_emails_to_csv_list.py
     send registration message with login/pass each student from csv file,
@@ -33,3 +36,5 @@ TODO:
 
 3) переделать wrapper, чтобы он следил и за ej-problems-uploader, и
    использовал ejudge-control stop && ejudge-control start для рестарта
+
+4) расхардкодить "/home/ejudge/test.csv" в xls2csv.py
