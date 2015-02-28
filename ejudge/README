@@ -17,12 +17,19 @@ Scripts for manage ejudge. BMSTU edition.
 5) ej-problems-uploader.py
     simple web server for auto loading new problems in contest
 
+6) TODO: make .csv student list from many xls files
+
+7) send_emails_to_csv_list.py
+    send registration message with login/pass each student from csv file,
+    prepared by previous script
+
 
 TODO:
 1) кажется, можно не рестартить весь еджадж для подгрузки новых задач,
    а достаточно запустить ./restart-ej-contest.sh
 
-2) архиватор-бекапер
+2) архиватор-бекапер:
+    tar -zcvf ejudge_28.02.2015_20.00.tar.gz archive download etc inst-ejudge  inst-ejudge-scrips  judges  test_work_dir tmp
 
 3) переделать wrapper, чтобы он следил и за ej-problems-uploader, и
    использовал ejudge-control stop && ejudge-control start для рестарта
