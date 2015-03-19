@@ -111,6 +111,9 @@ sub process_file
             next if $error =~ /ParseSyncResponse failure/;
             next if $error =~ /Invalid destination collection ID/;
             next if $error =~ /WBXML Parser Error/;
+            next if $error =~ /Error while appending message/;
+            next if $error =~ /Unknown http code/;
+            next if $error =~ /skipped because not founded remote_folder_id for id/;
 
             $error =~ s/Server answer:\s(\d*)\s/Server answer: xx /;
             $error =~ s/Refer to server log for more information. \[.*\]/Refer to server log for more information. \[yy\]/;
@@ -121,6 +124,10 @@ sub process_file
             $error =~ s/reque?st:\s(\d*)\sAPPEND ".*" \(.*\) \{.*\}, response:\s(\d*)\sOK \[APPENDUID\s\d*\s\d*\] APPEND Completed/requst: bb APPEND "fname" (flags) {size}, response: bb OK [APPENDUID nn] APPEND Completed/;
             $error =~ s/Duplicate folder name\s(.*)\s\(Failure\)/Duplicate folder name sssss (Failure)/;
             $error =~ s/xx BAD Server error: .*$/xx BAD Server error: LLLL/;
+            $error =~ s/can not find the mail,id\s(\d*)/can not find the mail,id xx/;
+            $error =~ s/marker:\s(.*)$/marker: ololo/;
+            $error =~ s/request:\s(\d*)\sAPPEND "Sent" \(.*\) \{(\d*)\}/request: 1 APPEND "Sent" (\\Seen) {777}/;
+            $error =~ s/response:\s(\d*)\sOK \[APPENDUID\s(\d*)\s(\d*)\] APPEND completed]/response: 2 OK [APPENDUID 111 222] APPEND completed]/;
 
             push (@{$data->{$error}}, \%tmp);
         }
