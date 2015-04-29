@@ -55,8 +55,9 @@ sub process_file
     open my $fh,"<$file" or die "cant open file";
     while (<$fh>)
     {
-        #Apr  2 12:20:36 collector11 collector[5532]: 
-        if($_ =~ /(\w\w\w)\s\s(.*?)\s(.*?)\s(.*?)\s(.*?)\s(.*)/)
+        #Apr  2 12:20:36 collector11 collector[5532]:
+        #Apr 28 04:46:22 collector10
+        if ($_ =~ /(\w\w\w)\s\s?(\d*?)\s(.*?)\s(.*?)\s(.*?)\s(.*)/)
         {
             my $month = month_to_num($1);
             my $day = $2;
