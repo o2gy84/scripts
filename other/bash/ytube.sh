@@ -8,7 +8,7 @@ fi
 echo "grab: $1"
 
 user="imap.test.13@gmail.com"
-pass="imaptest3"
+pass="imaptest13"
 
 youtube-dl --extract-audio --audio-format mp3 -u $user -p $pass $1
 
