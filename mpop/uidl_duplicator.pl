@@ -17,33 +17,52 @@ foreach my $file (@ARGV)
 #use Data::Dumper;
 #warn Dumper \%data;
 
-my $dup_count = 0;
 while (my @res = each %data)
 {
-    $dup_count += 1 if (duplicate_test($res[0], $res[1]) == 1);
+    my $dups = get_duplicates($res[1]);
+
+    if (keys %{$dups})
+    {
+        foreach my $dup (keys %{$dups})
+        {
+            foreach my $folders (@{$dups->{$dup}})
+            {
+                foreach my $folder (keys %{$folders})
+                {
+                    print "email: $res[0], uid: $dup, folder: $folder, count: $folders->{$folder}\n";
+                }
+            }
+        }
+    }
 }
-print "duplicated id: $dup_count\n";
 
-sub duplicate_test
+sub get_duplicates
 {
-    my $imap_id = shift;
-    my $array = shift;
+    my $ids = shift;
 
-    my %hash;
-    foreach my $element (@$array)
-    {   
-        $hash{$element}++;
-    }   
+    my %result;
 
-    foreach my $element (keys (%hash))
-    {   
-        if($hash{$element} > 1)
-        {   
-            print "duplicate: $imap_id, folder: $element, times: $hash{$element}\n";
-            return 1;
-        }   
-    }   
-    return 0;
+    foreach my $id (keys %{$ids})
+    {
+        my %dups_hash;
+
+        my $folders_array = $ids->{$id};
+        for my $folder (@{$folders_array})
+        {
+            $dups_hash{$folder}++;
+        }
+
+        foreach my $folder (keys %dups_hash)
+        {
+            if ($dups_hash{$folder} > 1)
+            {
+                my $dup = {$folder => $dups_hash{$folder}};
+                push @{$result{$id}}, $dup;
+            }
+        }
+    }
+
+    return \%result;
 }
 
 sub process_file
@@ -54,41 +73,22 @@ sub process_file
     open my $fh,"<$file" or die "cant open file";
     while (<$fh>)
     {
-        if($_ =~ /\s<== (.*) \[(.*)\]\]\s\[STORE\] uid: (\d*),\stime:\s(\d*)\(threshold:\s(\d*)\),\sfolder:\s(\d*)/)
+        if($_ =~ /\s<== (.*) \[(.*)\]\]\s\[STORE\] (OK|FAIL), uid: (\d*),\stime:\s(\d*)\(threshold:\s(\d*)\),\sfrom:\s.*,\sto:\s(\d*),/)
         {
             #print "email: $1\n";
             #print "server: $2\n";
-            #print "time: $4\n";
-            my $id = $3;
-            my $folder = $6;
+            #print "RESULT: $3\n";
+            #print "uid: $4\n";
+            #print "time: $5\n";
+            #print "folder_to: $7\n";
 
-            # is message stored, or deleted ?
-            my $result_of_store = undef;
-            while (<$fh>)
-            {
-                if ($_ =~ /Store message OK \[uid: (\d*)]/)
-                {
-                    next if ($1 != $id);
-                    $result_of_store = 1;
-                    last;
-                }
-                elsif ($_ =~ /Error storing message:\s(.*?)\s\[uid: (\d*),/)
-                {
-                    next if ($2 != $id);
-                    $result_of_store = 0;
-                    last;
-                }
-            }
+            next if ($3 eq 'FAIL');
 
-            if (!defined ($result_of_store))
-            {
-                print "LOG FILE IS BROKEN: $file\n";
-                exit 1;
-            }
+            my $email = $1;
+            my $id = $4;
+            my $folder = $7;
 
-            next if ($result_of_store == 0);
-
-            push (@{$data->{$id}}, $folder);
+            push @{$data->{$email}{$id}}, $folder;
         }
     }
     close $fh;
