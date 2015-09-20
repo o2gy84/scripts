@@ -9,7 +9,8 @@ EJ_DESC_GENERATOR=generate_description.py
 EJ_PROBLEMS_UPLOADER=ej-problems-uploader.py
 EJ_RESTART=restart-ej-contest.sh
 EJ_TEST_NORMALIZER=tests_normalizer.pl
-EJ_EMAILER=send_emails_to_csv_list.py
+EJ_SENDMAIL_EMAILER=send_emails_to_csv_list.py
+EJ_SMTP_EMAILER=send_emails_to_csv_list_via_smtp.py
 EJ_CSVCREATOR=xls2csv.py
 
 user=$(shell whoami)
@@ -27,5 +28,6 @@ endif
 	@ cp -v ${EJ_PROBLEMS_UPLOADER} ${INSTALL_DIR}
 	@ cp -v ${EJ_RESTART} ${INSTALL_DIR}
 	@ cp -v ${EJ_TEST_NORMALIZER} ${INSTALL_DIR}
-	@ cp -v ${EJ_EMAILER} ${INSTALL_DIR}
+	@ cp -v ${EJ_SENDMAIL_EMAILER} ${INSTALL_DIR}
+	@ cp -v ${EJ_SMTP_EMAILER} ${INSTALL_DIR}
 	@ cp -v ${EJ_CSVCREATOR} ${INSTALL_DIR}
