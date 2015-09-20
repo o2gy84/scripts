@@ -1,38 +1,51 @@
 #!/bin/bash
 #author: v.mogilin, v.mogilin@corp.mail.ru
 
-BIN_PATH=/home/ejudge/inst-ejudge/bin/
+EJ_CONTROL=/home/ejudge/inst-ejudge/bin/ejudge-control
 EJ_USERS=ej-users
 
-function is_running() {
-# returns 0, if process no running
-	gr=`pgrep $1`
-	if [ -z $gr ]
-	then
-		return 0
-	fi
-	return 1
-}
+EJ_PROBLEM_UPLOADER_PATH=/home/ejudge/inst-ejudge-scrips/ej-problems-uploader.py
+EJ_PROBLEM_UPLOADER=ej-problems-uploader.py
 
-function check_process() {
-# check and restart process
-	is_running $1
-	result=$?
-	if [ $result -eq "0" ]
-	then
-		echo "$1 not running.. force start again"
-		`$EJ_USERS_RUN &`
-	else
-		:
-		#echo "[debug] process runnnig"
-	fi
-}
+function is_running()
+{
+    # returns 0, if process no running
 
+    gr=`pgrep -f $1`
+    if [ -z $gr ]
+    then
+        return 0
+    fi
+    return 1
+}
 
 while true; do
 
-	check_process $EJ_USERS
-	sleep 1
+    is_running $EJ_USERS
+    result=$?
+    if [ $result -eq "0" ]
+    then
+        echo "$EJ_USERS not running.. restart ejudge!"
+        ${EJ_CONTROL} stop
+        sleep 1
+        ${EJ_CONTROL} start
+    else
+        :
+        #echo "[debug] process (${EJ_USERS}) runnnig OK"
+    fi
+
+    is_running $EJ_PROBLEM_UPLOADER
+    result=$?
+    if [ $result -eq "0" ]
+    then
+        echo "$EJ_PROBLEM_UPLOADER not running.. restart uploader!"
+        nohup ${EJ_PROBLEM_UPLOADER_PATH} 2>/dev/null &
+    else
+        :
+        #echo "[debug] process (${EJ_PROBLEM_UPLOADER}) runnnig OK"
+    fi
+
+	sleep 3
 done
 
 exit 0
