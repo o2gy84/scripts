@@ -23,9 +23,12 @@ Scripts for manage ejudge. BMSTU edition.
     output file hardcoded to "/home/ejudge/test.csv"
 
 7) send_emails_to_csv_list.py
-    send registration message with login/pass each student from csv file,
-    prepared by previous script
+    send registration message (VIA SENDMAIL) with login/pass each student from csv file,
+    prepared by script xls2csv.py
 
+8) send_emails_to_csv_list_via_smtp.py
+    send registration message (VIA SMTP) with login/pass each student from csv file,
+    prepared by script xls2csv.py
 
 TODO:
 1) кажется, можно не рестартить весь еджадж для подгрузки новых задач,
