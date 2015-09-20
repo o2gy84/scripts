@@ -38,3 +38,5 @@ TODO:
     tar -zcvf ejudge_28.02.2015_20.00.tar.gz archive download etc inst-ejudge  inst-ejudge-scrips  judges  test_work_dir tmp
 
 3) расхардкодить "/home/ejudge/test.csv" в xls2csv.py
+
+4) конкретизировать исключения при ошибках отправки писем через smtp (неверный пароль и т.п.)
