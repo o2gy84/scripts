@@ -23,9 +23,12 @@ Scripts for manage ejudge. BMSTU edition.
     output file hardcoded to "/home/ejudge/test.csv"
 
 7) send_emails_to_csv_list.py
-    send registration message with login/pass each student from csv file,
-    prepared by previous script
+    send registration message (VIA SENDMAIL) with login/pass each student from csv file,
+    prepared by script xls2csv.py
 
+8) send_emails_to_csv_list_via_smtp.py
+    send registration message (VIA SMTP) with login/pass each student from csv file,
+    prepared by script xls2csv.py
 
 TODO:
 1) кажется, можно не рестартить весь еджадж для подгрузки новых задач,
@@ -34,7 +37,6 @@ TODO:
 2) архиватор-бекапер:
     tar -zcvf ejudge_28.02.2015_20.00.tar.gz archive download etc inst-ejudge  inst-ejudge-scrips  judges  test_work_dir tmp
 
-3) переделать wrapper, чтобы он следил и за ej-problems-uploader, и
-   использовал ejudge-control stop && ejudge-control start для рестарта
+3) расхардкодить "/home/ejudge/test.csv" в xls2csv.py
 
-4) расхардкодить "/home/ejudge/test.csv" в xls2csv.py
+4) конкретизировать исключения при ошибках отправки писем через smtp (неверный пароль и т.п.)
