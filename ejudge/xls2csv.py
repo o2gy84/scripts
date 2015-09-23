@@ -19,22 +19,23 @@ def generate_pass(size=12, chars=string.ascii_uppercase + string.digits):
 students_map = {}
 
 for f in sys.argv[1:]:
-    print "file: ", f
     rb = xlrd.open_workbook(f, formatting_info=True)
     sheet = rb.sheet_by_index(0)                        # select first list in .xls file
     for rownum in range(sheet.nrows):
         if rownum == 0:                                 # skip first line
             continue
         row = sheet.row_values(rownum)
-        students_map[row[0].strip()] = row[1].strip()
-        print "login: ",row[0], ", email: ",row[1]
 
-#for login, email in students_map.items():
-#    print "login: ",login, ", email: ",email
+        # this part may change!
+        login = row[0].strip()
+        email = row[3].strip()
 
-print "students total: ", len(students_map)
+        students_map[login] = email
 
-writer = csv.writer(open("/home/ejudge/test.csv", 'w'), dialect='excel', delimiter=';')
+#print "students total: ", len(students_map)
+
+#writer = csv.writer(open("/home/ejudge/test.csv", 'w'), dialect='excel', delimiter=';')
+writer = csv.writer(sys.stdout, dialect='excel', delimiter=';')
 writer.writerow(['login', 'email', 'name', 'password'])
 
 for login, email in students_map.items():
