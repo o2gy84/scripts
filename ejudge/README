@@ -38,3 +38,5 @@ TODO:
     tar -zcvf ejudge_28.02.2015_20.00.tar.gz archive download etc inst-ejudge  inst-ejudge-scrips  judges  test_work_dir tmp
 
 3) конкретизировать исключения при ошибках отправки писем через smtp (неверный пароль и т.п.)
+
+4) ability to change SUBJECT and LINK for message in send_emails script

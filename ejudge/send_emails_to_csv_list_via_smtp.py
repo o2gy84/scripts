@@ -28,7 +28,7 @@ def send_email(email, login, password):
     message = u"""
     Вы зарегистрированы в системе тестирования ejudge, курс 'Углубленное программирование на C/C++'.<br \> <br \>
 
-    Адрес для входа в систему: http://195.19.44.139/cgi-bin/new-client?contest_id=2<br \>
+    Адрес для входа в систему: http://195.19.44.139/cgi-bin/new-client?contest_id=4<br \>
     Логин: {0}<br \>
     Пароль: {1}<br \>
     """.format(login, password)
@@ -36,7 +36,7 @@ def send_email(email, login, password):
     msg = MIMEText(message.encode('utf-8'), 'html', 'utf-8')
     msg["From"] = ejudge_user
     msg["To"] = email
-    msg["Subject"] = "Invitation to the AST ejudge from Technopark BMSTU"
+    msg["Subject"] = "Invitation to the AST ejudge from Technosphere MGU"
 
     try:
         session = smtplib.SMTP_SSL(smtp_host, smtp_port)
