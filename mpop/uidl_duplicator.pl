@@ -73,7 +73,9 @@ sub process_file
     open my $fh,"<$file" or die "cant open file";
     while (<$fh>)
     {
-        if($_ =~ /\s<== (.*) \[(.*)\]\]\s\[STORE\] (OK|FAIL), uid: (\d*),\stime:\s(\d*)\(threshold:\s(\d*)\),\sfrom:\s.*,\sto:\s(\d*),/)
+##[#16144647:judith_n_62707@yahoo.com@external <== judith_n_62707@yahoo.com [imap.mail.yahoo.com]] [STORE] OK, uid: 382600, time: 1447423120, threshold: 1447425224, from: 'Inbox', to: 0,
+        #if($_ =~ /\s<== (.*) \[(.*)\]\]\s\[STORE\] (OK|FAIL), uid: (\d*),\stime:\s(\d*)\(threshold:\s(\d*)\),\sfrom:\s.*,\sto:\s(\d*),/)
+        if($_ =~ /\s<== (.*) \[(.*)\]\]\s\[STORE\] (OK|FAIL), uid: (\d*),\stime:\s(\d*),\sthreshold:\s(\d*),\sfrom:\s.*,\sto:\s(\d*),/)
         {
             #print "email: $1\n";
             #print "server: $2\n";
