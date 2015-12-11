@@ -86,13 +86,17 @@ sub process_file
             $tmp{$server} = $user;
 
             my $error = $3;
-            next if $error =~ /Unknown http code/;
-            next if $error =~ /skipped because not founded remote_folder_id for id/;
+
+            $error =~ s/FETCH\[(\d+):(\w+)\]/FETCH[num:Folder]/;
+            $error =~ s/Rimap line: (\d+) FETCH/Rimap line: num FETCH/;
+            $error =~ s/Server answer: (\d+) BAD/Server answer: num BAD/;
+            $error =~ s/ETCH (\d+):/ETCH num:/;
 
             $error =~ s/Server returned BAD RESPONSE upon command: FETCH(.*)\sServer answer: (\d*) BAD Error in IMAP command FETCH: Invalid messageset. (.*)/Server returned BAD RESPONSE upon command: FETCH[num:Folder]. Server answer: num BAD Error in IMAP command FETCH: Invalid messageset. Rimap line: xxx/;
 
             $error =~ s/Server returned BAD RESPONSE upon command: FETCH(.*)\sServer answer: (\d*) BAD \[CLIENTBUG\] FETCH Bad sequence in the command. (.*)/Server returned BAD RESPONSE upon command: FETCH[num:Folder]. Server answer: num BAD [CLIENTBUG] FETCH Bad sequence in the command. Rimap line: yyy/;
 
+            $error =~ s/Server returned BAD RESPONSE upon command: FETCH(.*). Server answer: (\d*) BAD parse error: invalid message sequence number: 1:*. Rimap line: (\d*) FETCH 1:* (UID FLAGS)/Server returned BAD RESPONSE upon command: FETCH[13:Junk]. Server answer: 97 BAD parse error: invalid message sequence number: 1:*. Rimap line: num FETCH 1:* (UID FLAGS)/;
 
             push (@{$data->{$error}}, \%tmp);
         }
