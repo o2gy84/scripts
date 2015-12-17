@@ -35,13 +35,13 @@ foreach my $key (@k)
 
 sub print_error_stat
 {
-    my $arr = shift;    # arr - ýòî ìàññèâ õåøåé, server => user
+    my $arr = shift;
     my %result_hash;
     my %result_count_hash;
 
     foreach my $elem (@$arr)                    # elem = (server, email)
     {
-        my ($key, $value) = each %{$elem};      # òóò âñåãäà 1 ýëåìåíò
+        my ($key, $value) = each %{$elem};
         push( @{$result_hash{$key}}, $value);
         $result_count_hash{$value}++;
     }
@@ -53,15 +53,32 @@ sub print_error_stat
         $result_hash{$el} = \@uniq;
     }
 
+    my %err_frequency;                         # imap.aol.com => 10 times, imap.wp.pl => 1000 times e.t.c.
+
     foreach my $element (keys (%result_hash) )
     {
-        print "\t[$element]\n";
+        my $total_items = 0;
+        foreach my $email ( @{$result_hash{$element}} ) { $total_items += $result_count_hash{$email}; }
+
+        $err_frequency{$element} = $total_items;
+        print "\t[$element], total: $total_items\n";
         foreach my $email ( @{$result_hash{$element}} )
         {
             print "\t\t$email, times: $result_count_hash{$email}\n";
         }
     }
-    print "\n";
+
+    print "\ntop domains:";
+    my $top_count = 0;
+    foreach my $server (sort { $err_frequency{$b} <=> $err_frequency{$a} } keys %err_frequency)
+    {
+        last if ($top_count >= 10);
+        print "," if ($top_count > 0);
+        printf " $server: " . $err_frequency{$server};
+        $top_count += 1;
+    }
+
+    print "\n============================================================\n";
 }
 
 sub process_file
