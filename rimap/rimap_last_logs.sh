@@ -2,7 +2,8 @@
 
 ALL=""
 
-for dir in /mnt/maillogs/f-rimap*-collector.log
+#for dir in /mnt/maillogs/mycom/f-*-collector.log
+for dir in /mnt/maillogs/f-*-collector.log
 do
 	f=`ls $dir | grep rimap | tail -n 1`
 	if [ -n "$f" ]
@@ -14,3 +15,4 @@ do
 done
 
 echo "$ALL"
+
