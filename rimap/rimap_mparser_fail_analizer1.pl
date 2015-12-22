@@ -11,7 +11,7 @@ if(not defined $ARGV[0])
 my %data;
 foreach my $file (@ARGV)
 {
-    process_file(\%data, $file);
+    process_file_mparser_failed(\%data, $file);
     # Теперь %data содержит хеш, в котором ключ - это строка с ошибокй,
     # а значение - это массив из хешей, в каждом из которых ключ -
     # это имап-сервер, а значение - емейл юзера.
@@ -86,8 +86,11 @@ sub print_error_stat
     print "\n";
 }
 
-sub process_file
+sub process_file_mparser_failed
 {
+=k
+    [#11306358:sergey.belozor@azurair.com@external <== sergey.belozor@azurair.com [mail.azurair.com]] [MPARSER] Failed move msg [uidl: 1449146632:1, folder_from: 3, folder_to: 950]: unknown error
+=cut
     my $data = shift;
     my $file = shift;
 

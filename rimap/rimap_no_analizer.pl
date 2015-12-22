@@ -11,7 +11,7 @@ if(not defined $ARGV[0])
 my %data;
 foreach my $file (@ARGV)
 {
-    process_file(\%data, $file);
+    process_file_server_answer_NO(\%data, $file);
 }
 
 #use Data::Dumper;
@@ -81,17 +81,17 @@ sub print_error_stat
     print "\n============================================================\n";
 }
 
-sub process_file
+sub process_file_server_answer_NO
 {
+=k
+[#65306:eliseev56@list.ru <== a22011956e@yandex.ru [imap.yandex.ru]] [SERVER] NO: SELECT> (*.). Server answer: 18 NO [NONEXISTENT] Unknown Mailbox: ololo(*). Rimap line: 18 SELECT (*)
+=cut
     my $data = shift;
     my $file = shift;
 
     open my $fh,"<$file" or die "cant open file";
     while (<$fh>)
     {
-=k
-[#65306:eliseev56@list.ru <== a22011956e@yandex.ru [imap.yandex.ru]] [SERVER] NO: SELECT> (*.). Server answer: 18 NO [NONEXISTENT] Unknown Mailbox: ololo(*). Rimap line: 18 SELECT (*)
-=cut
         if($_ =~ /#\d*:(.*)\s<==\s.*\s\[(.*)\]\]\s\[SERVER\] NO:\s.*\sServer answer:(.*)\. Rimap line: /)
         {
             my $user = $1;

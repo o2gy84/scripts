@@ -11,7 +11,7 @@ if(not defined $ARGV[0])
 my %data;
 foreach my $file (@ARGV)
 {
-    process_file(\%data, $file);
+    process_file_instant_exceptions(\%data, $file);
 }
 
 #use Data::Dumper;
@@ -81,18 +81,17 @@ sub print_error_stat
     print "\n============================================================\n";
 }
 
-sub process_file
+sub process_file_instant_exceptions
 {
+=k
+[IGNORED] sync folder exception: Server returned BAD RESPONSE upon command:     FETCH[13:Junk]. Server answer: 9 BAD Error in IMAP command FETCH: Invalid messageset. Rimap line: 9 FETCH 126:* (UID FLAGS)
+=cut
     my $data = shift;
     my $file = shift;
 
     open my $fh,"<$file" or die "cant open file";
     while (<$fh>)
     {
-=k
-[IGNORED] sync folder exception: Server returned BAD RESPONSE upon command:     FETCH[13:Junk]. Server answer: 9 BAD Error in IMAP command FETCH: Invalid messageset. Rimap line: 9 FETCH 126:* (UID FLAGS)
-=cut
-
         if($_ =~ /#\d*:(.*)\s<==\s.*\s\[(.*)\]\]\s.*\bexception: (.*)/)
         {
             my $user = $1;

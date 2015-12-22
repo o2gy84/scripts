@@ -11,7 +11,7 @@ if(not defined $ARGV[0])
 my %data;
 foreach my $file (@ARGV)
 {
-    process_file(\%data, $file);
+    process_file_rimap_failure(\%data, $file);
 }
 
 #use Data::Dumper;
@@ -64,17 +64,17 @@ sub print_error_stat
     print "\n";
 }
 
-sub process_file
+sub process_file_rimap_failure
 {
+=k
+[#65306:eliseev56@list.ru <== a22011956e@yandex.ru [imap.yandex.ru]] Failure: collected 0 messages, 786 bytes in. Time: 0s, Downtime: 928s, DowntimeAfterSuccess: 950072s, SQL: 2ms, KAV: 0ms, KAS: 0ms, MRAS: 0ms, Delivery: 0ms, Contacts: 0ms, UserLookup: 1ms, Connect: 53ms, Read: 232ms, Write: 0ms, Mailbox: 0ms, Network: 190ms, Hermes: 0ms, Rico: 2ms, Mso: 16ms, mmrd: 0, forced: 0, dry: 1  E: parent folder with ID = 5 not found at eliseev56@list.ru
+=cut
     my $data = shift;
     my $file = shift;
 
     open my $fh,"<$file" or die "cant open file";
     while (<$fh>)
     {
-=k
-[#65306:eliseev56@list.ru <== a22011956e@yandex.ru [imap.yandex.ru]] Failure: collected 0 messages, 786 bytes in. Time: 0s, Downtime: 928s, DowntimeAfterSuccess: 950072s, SQL: 2ms, KAV: 0ms, KAS: 0ms, MRAS: 0ms, Delivery: 0ms, Contacts: 0ms, UserLookup: 1ms, Connect: 53ms, Read: 232ms, Write: 0ms, Mailbox: 0ms, Network: 190ms, Hermes: 0ms, Rico: 2ms, Mso: 16ms, mmrd: 0, forced: 0, dry: 1  E: parent folder with ID = 5 not found at eliseev56@list.ru
-=cut
         if($_ =~ /#\d*:(.*)\s<==\s.*\s\[(.*)\]\]\sFailure:\s.*\sE:(.*)/)
         {
             my $user = $1;
