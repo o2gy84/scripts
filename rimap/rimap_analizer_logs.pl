@@ -165,6 +165,7 @@ sub process_file_server_answer_NO
             $error =~ s/.*\sNO \[NONEXISTENT\] Unknown Mailbox: .*/1 NO [NONEXISTENT] Unknown Mailbox: name/;
             $error =~ s/Refer to server log for more information\. (.*)/Refer to server log for more information/;
             $error =~ s/\s*(\d*)\s/1 /;
+            $error =~ s/\(.*secs\)/(0.xxx secs)/;
             $error =~ s/MARKER:(.*)/MARKER: /;
             $error =~ s/marker: (.*)/marker: /;
             $error =~ s/\d+ NO sock->write\(FETCH uid,(\d+),\(RFC822.SIZE BODY.PEEK\[\]\)\) FAILED/num NO sock->write(FETCH uid,num,(RFC822.SIZE BODY.PEEK[])) FAILED/;
