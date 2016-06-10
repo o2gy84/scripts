@@ -65,10 +65,10 @@ sub process_file
 {
     my $data = shift;
     my $file = shift;
-    
+
     open my $fh,"<$file" or die "cant open file";
     chomp (my @lines = <$fh>);
-    
+
     my $count = scalar(@lines);
 
     for (my $i = 0; $i < $count; $i++)
@@ -88,6 +88,7 @@ sub process_file
             my $read_failed = 0;
             my $no_msg = 0;
             my $invalid_token = 0;
+            my $invalid_pass = 0;
             my $no_token = 0;
             my $have_messages_from_inbox = 0;
        
@@ -132,11 +133,6 @@ sub process_file
                 {
                     $first_success_at = $1;
                 }
-                elsif ($inner_line =~ /\[RIMA\] success put force newuser_priority task/)
-                {
-                    $read_failed = 1;
-                    last;
-                }
                 elsif ($inner_line =~ /\[SESSION\] folders: \d+, synced: \d+, debt: \[\d+,0,/)
                 {
                     # дальше этой строчки пасить сессию не имеет смысла
@@ -154,8 +150,17 @@ sub process_file
                     $invalid_token = 1;
                     last;
                 }
-                elsif ($inner_line =~ /\]\] Failure: collected\s/)
+                elsif ($inner_line =~ /\]\] Failure: collected\s.*\sE:\s(.+)$/)
                 {
+                    my $err = $1;
+                    if ($err =~ /LOGIN FAILED \[/)
+                    {
+                        $invalid_pass = 1;
+                    }
+                    elsif ($err =~ /read failed/ || $err =~ /async read timeout/)
+                    {
+                        $read_failed = 1;
+                    }
                     last;
                 }
                 elsif ($inner_line =~ /\]\] Success: collected\s/)
@@ -165,7 +170,8 @@ sub process_file
             }
 
             print "$user collector$collector ts:$time_first_collect collect_at:$first_collect_at success_at:$first_success_at ";
-            print "readfail:$read_failed nomsg:$no_msg inboxnot1:$have_messages_from_inbox badtoken:$invalid_token notoken:$no_token";
+            print "readfail:$read_failed nomsg:$no_msg inboxnot1:$have_messages_from_inbox badtoken:$invalid_token notoken:$no_token ";
+            print "badpass:$invalid_pass";
             foreach my $key (keys %messages)
             {
                 print " '$key:$messages{$key}'";
