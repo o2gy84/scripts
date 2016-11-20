@@ -1,0 +1,63 @@
+# Makefile so universal
+
+VERSION     = 0
+REVISION    = 1
+NAME        = libaeslogger.so
+
+BINNAME     =$(NAME).$(VERSION).$(REVISION)
+
+HEADER_INSTALL  = /usr/local/include
+BIN_INSTALL = /usr/local/lib
+
+# Заголовочные
+ADD_DEPS    = AesLogger.h
+
+# Объектники
+AES_LOGGER  = AesLogger, 
+MODULES     = $(AES_LOGGER)
+OBJS        = $(MODULES:,=.o)
+
+# Расширение объектников
+CCEXT       = cpp
+COMPILER    = g++
+
+world: all
+
+all: $(BINNAME)
+
+$(BINNAME): $(OBJS) $(ADD_DEPS)
+    @ echo Сборка библиотеки $(BINNAME)
+    @ gcc -o $(BINNAME) -Wall -shared -Wl,-soname,$(NAME).$(VERSION) $(OBJS) -lc
+    @ echo Библиотека собрана.
+ 
+COMPILE      = $(COMPILER) -c -fPIC -Wall
+ 
+%.o: %.$(CCEXT) %.h % $(ADD_DEPS)
+    @ echo Сборка модуля $@
+    @ $(COMPILE) $<
+ 
+%.o: %.$(CCEXT) %.h $(ADD_DEPS)
+    @ echo Сборка модуля $@
+    @ $(COMPILE) $<
+ 
+%.o: %.$(CCEXT) $(ADD_DEPS)
+    @ echo Сборка модуля $@
+    @ $(COMPILE) $<
+ 
+install: $(BINNAME) $(ADD_DEPS)
+    @echo Инсталляция библиотеки $(BINNAME):
+    @cp -v $(BINNAME) $(BIN_INSTALL)
+    @cd  $(BIN_INSTALL); ln -sf $(BINNAME) $(NAME).$(VERSION) ; ln -sf $(NAME).$(VERSION) $(NAME)
+    @echo Копирование заголовочных файлов:
+    @mkdir -p $(HEADER_INSTALL); cp -v $(ADD_DEPS) $(HEADER_INSTALL)
+    @echo Выполняется ldconfig      
+    @ldconfig
+    @echo Библиотека $(BINNAME) установлена и готова к использованию!
+                                                                
+
+.PHONY: install
+
+clean:
+	@rm -f *.o *.so *~ $(BINNAME) $(NAME).$(VERSION) $(NAME)
+
+.PHONY: clean

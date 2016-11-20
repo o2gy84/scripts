@@ -1,0 +1,42 @@
+#Makefile universal bin
+
+CC=/usr/bin/gcc
+CXX=/usr/bin/g++
+
+COMPILER=$(CXX)
+LINKER = $(CC)
+
+STRIPPER = /usr/bin/strip
+
+#F  = -I$(COMPATH)arm-linux/include/c++
+#INCLUDE = $(F)
+INCLUDE = 
+
+BINNAME = bin
+EXT = cpp
+
+COMPILE = $(COMPILER) -c -Wall -s -Os $(INCLUDE)
+DEPS    = -lstdc++ -lpthread
+
+world: all
+
+all: $(BINNAME)
+
+FILES   = $(wildcard *.$(EXT))
+OBJFILES= $(FILES:.$(EXT)=.o)
+
+$(BINNAME): $(OBJFILES)
+    @ echo
+    @ echo Сборка программы
+    $(LINKER) -o $(BINNAME) $^ $(DEPS)
+    @ echo Делаю файл stripped
+    $(STRIPPER) $(BINNAME)
+	@ echo Готово!
+
+%.o: %.$(EXT)
+    @ echo "Компиляция файла $< "
+    $(COMPILE) $<
+
+clean: 
+	rm -f *~ *.o  $(BINNAME)
+.PHONY: clean
