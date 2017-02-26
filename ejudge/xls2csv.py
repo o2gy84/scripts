@@ -16,9 +16,15 @@ except:
 def generate_pass(size=12, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
+def username_from_email(email):
+    name, other = email.split("@", 2)
+    return name
+
+only_email = True
 students_map = {}
 
 for f in sys.argv[1:]:
+    print "file: ", f
     rb = xlrd.open_workbook(f, formatting_info=True)
     sheet = rb.sheet_by_index(0)                        # select first list in .xls file
     for rownum in range(sheet.nrows):
@@ -26,16 +32,24 @@ for f in sys.argv[1:]:
             continue
         row = sheet.row_values(rownum)
 
-        # this part may change!
-        login = row[0].strip()
-        email = row[3].strip()
-
+        login = ""
+        email = ""
+        if only_email == True:
+            email = row[5].strip()
+            login = username_from_email(email)
+        else:
+            login = row[0].strip()
+            email = row[3].strip()
+            
         students_map[login] = email
+        print "login: ",login, ", email: ",email
 
-#print "students total: ", len(students_map)
+#for login, email in students_map.items():
+#    print "login: ",login, ", email: ",email
 
-#writer = csv.writer(open("/home/ejudge/test.csv", 'w'), dialect='excel', delimiter=';')
-writer = csv.writer(sys.stdout, dialect='excel', delimiter=';')
+print "students total: ", len(students_map)
+
+writer = csv.writer(open("/home/ejudge/test.csv", 'w'), dialect='excel', delimiter=';')
 writer.writerow(['login', 'email', 'name', 'password'])
 
 for login, email in students_map.items():
