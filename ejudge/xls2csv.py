@@ -16,9 +16,12 @@ except:
 def generate_pass(size=12, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
+def username_tail(size=4, chars=string.ascii_lowercase):
+    return ''.join(random.choice(chars) for _ in range(size))
+
 def username_from_email(email):
     name, other = email.split("@", 2)
-    return name
+    return name + "." + username_tail()
 
 only_email = True
 students_map = {}
