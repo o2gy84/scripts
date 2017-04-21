@@ -31,9 +31,11 @@ PKG_TYPE        = pkg_type(sys.argv[1])
 # copy into PREFIX/INCLUDE_PREFIX
 INCLUDE_FILES   = ['3', '4', 'onefile/foo', 'twofile/innnerdir/bar', ]
 INCLUDE_DIRS    = ['111', ]
+INCLUDE_MAP     = {'111/222/proto/caffe_proto.h': 'caffe/proto/caffe_proto.h', }
 
 # copy into PREFIX/LIB_PREFIX
 LIBS            = ['file.so', 'onefile/foo', ]
+LIBS_MAP        = {'build/caffe.so.1': 'caffe.so.1', 'build/caffe.so': 'caffe.so', }
 
 # copy into PREFIX
 FILES           = ['file.so_link', 'onefile/foo', ]
@@ -80,10 +82,22 @@ for f in INCLUDE_FILES:
     create_dirs_if_needed(os.path.join(buildroot_prefix, INCLUDE_PREFIX), f)
     os.system("cp -av " + f + " " + os.path.join(buildroot_prefix, INCLUDE_PREFIX, f))
 
+for f in INCLUDE_MAP:
+    file_exist_or_die(f)
+    new_f = INCLUDE_MAP[f]
+    create_dirs_if_needed(os.path.join(buildroot_prefix, INCLUDE_PREFIX), new_f)
+    os.system("cp -av " + f + " " + os.path.join(buildroot_prefix, INCLUDE_PREFIX, new_f))
+
 for l in LIBS:
     file_exist_or_die(l)
     create_dirs_if_needed(os.path.join(buildroot_prefix, LIB_PREFIX), l)
     os.system("cp -av " + l + " " + os.path.join(buildroot_prefix, LIB_PREFIX, l))
+
+for l in LIBS_MAP:
+    file_exist_or_die(l)
+    new_l = LIBS_MAP[l]
+    create_dirs_if_needed(os.path.join(buildroot_prefix, LIB_PREFIX), new_l)
+    os.system("cp -av " + l + " " + os.path.join(buildroot_prefix, LIB_PREFIX, new_l))
 
 for f in FILES:
     file_exist_or_die(f)
