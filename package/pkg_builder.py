@@ -139,7 +139,10 @@ def build_dev_package(name):
     cmd  = "fpm --force -s " + TYPE_FROM + " -t " + TYPE_TO + " -C " + buildroot + " --rpm-dist " + DIST
     cmd += " --name " + name + " --version " + cur_date.strip() + " --iteration 1"
     cmd += " --description \"Headers for " + NAME + "\" -a native"
-    cmd += " -d \"" + NAME + " = " + cur_date.strip() + "\""
+    cmd += " -d \"" + NAME + " = " + cur_date.strip()
+    if  TYPE_TO == 'deb':
+        cmd += "-1"
+    cmd += "\""
 
     for d in PKG_DEV_DIRS:
         path = buildroot + d
