@@ -30,7 +30,7 @@ PKG_TYPE        = pkg_type(sys.argv[1])
 
 # copy into PREFIX/INCLUDE_PREFIX
 INCLUDE_FILES   = [ ]
-INCLUDE_DIRS    = ['caffe', ]
+INCLUDE_DIRS    = {'../include/caffe': 'caffe', }
 INCLUDE_MAP     = {'111/222/proto/caffe_proto.h': 'caffe/proto/caffe_proto.h', }
 
 # copy into PREFIX/LIB_PREFIX
@@ -118,7 +118,8 @@ def build_dev_package(name):
 
     for d in INCLUDE_DIRS:
         file_exist_or_die(d)
-        os.system("cp -rv " + d + " " + os.path.join(buildroot_prefix, INCLUDE_PREFIX, d))
+        new_d = INCLUDE_DIRS[d]
+        os.system("cp -rv " + d + " " + os.path.join(buildroot_prefix, INCLUDE_PREFIX, new_d))
 
     for f in INCLUDE_FILES:
         file_exist_or_die(f)
