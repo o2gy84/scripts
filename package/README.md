@@ -1,5 +1,7 @@
 ### RPM/DEB packager
-Allow to build rpm/deb packages so easy as 123
+Allow to build rpm/deb packages so easy as 123  
+1) simple_pkg_builder.py: just build package as is
+2) pkg_builder.py: build both dev-package with only headers and package with files, libraries e.t.c.
 
 ## Before usage:
 _Ubuntu:_  
