@@ -119,6 +119,7 @@ def build_dev_package(name):
     for d in INCLUDE_DIRS:
         file_exist_or_die(d)
         new_d = INCLUDE_DIRS[d]
+        create_dirs_if_needed(os.path.join(buildroot_prefix, INCLUDE_PREFIX), new_d)
         os.system("cp -rv " + d + " " + os.path.join(buildroot_prefix, INCLUDE_PREFIX, new_d))
 
     for f in INCLUDE_FILES:
