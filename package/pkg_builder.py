@@ -66,7 +66,10 @@ def file_exist_or_die(path):
 def create_dirs_if_needed(prefix, name):
     dirname = os.path.dirname(name)
     if len(dirname) > 0:
-        os.makedirs(os.path.join(prefix, dirname))
+        try:
+            os.makedirs(os.path.join(prefix, dirname))
+        except:
+            pass
 
 def build_package(name):
     os.system("rm -rf " + buildroot + " && mkdir " + buildroot)
