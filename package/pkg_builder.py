@@ -40,6 +40,7 @@ LIBS_MAP        = {'build/caffe.so.1': 'caffe.so.1', 'build/caffe.so': 'caffe.so
 # copy into PREFIX
 FILES           = [ ]
 DIRS            = [ ]
+DIRS_MAP        = {'../install/bin/': 'bin', '../install/lib/': 'lib', }
 
 # dirs you want to be removed after erasing package
 PKG_DIRS        = [ ]
@@ -74,7 +75,10 @@ def create_dirs_if_needed(prefix, name):
 def build_package(name):
     os.system("rm -rf " + buildroot + " && mkdir " + buildroot)
     os.makedirs(buildroot_prefix)
-    os.makedirs(os.path.join(buildroot_prefix, LIB_PREFIX))
+    try:
+        os.makedirs(os.path.join(buildroot_prefix, LIB_PREFIX))
+    except:
+        pass
 
     for l in LIBS:
         file_exist_or_die(l)
@@ -95,6 +99,11 @@ def build_package(name):
     for d in DIRS:
         file_exist_or_die(d)
         os.system("cp -rv " + d + " " + os.path.join(buildroot_prefix, d))
+
+    for d in DIRS_MAP:
+        file_exist_or_die(d)
+        new_d = DIRS_MAP[d]
+        os.system("cp -rv " + d + " " + os.path.join(buildroot_prefix, new_d))
 
     cmd  = "fpm --force -s " + TYPE_FROM + " -t " + TYPE_TO + " -C " + buildroot + " --rpm-dist " + DIST
     cmd += " --name " + name + " --version " + cur_date.strip() + " --iteration 1"
@@ -117,7 +126,10 @@ def build_package(name):
 def build_dev_package(name):
     os.system("rm -rf " + buildroot + " && mkdir " + buildroot)
     os.makedirs(buildroot_prefix)
-    os.makedirs(os.path.join(buildroot_prefix, INCLUDE_PREFIX))
+    try:
+        os.makedirs(os.path.join(buildroot_prefix, INCLUDE_PREFIX))
+    except:
+        pass
 
     for d in INCLUDE_DIRS:
         file_exist_or_die(d)
