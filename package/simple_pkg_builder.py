@@ -30,7 +30,7 @@ PKG_TYPE        = pkg_type(sys.argv[1])
 
 # copy into PREFIX/INCLUDE_PREFIX
 INCLUDE_FILES   = ['3', '4', 'onefile/foo', 'twofile/innnerdir/bar', ]
-INCLUDE_DIRS    = ['111', ]
+INCLUDE_DIRS    = {'../include/caffe': 'caffe', }
 INCLUDE_MAP     = {'111/222/proto/caffe_proto.h': 'caffe/proto/caffe_proto.h', }
 
 # copy into PREFIX/LIB_PREFIX
@@ -71,11 +71,16 @@ def file_exist_or_die(path):
 def create_dirs_if_needed(prefix, name):
     dirname = os.path.dirname(name)
     if len(dirname) > 0:
-        os.makedirs(os.path.join(prefix, dirname))
+        try:
+            os.makedirs(os.path.join(prefix, dirname))
+        except:
+            pass
 
 for d in INCLUDE_DIRS:
     file_exist_or_die(d)
-    os.system("cp -rv " + d + " " + os.path.join(buildroot_prefix, INCLUDE_PREFIX, d))
+    new_d = INCLUDE_DIRS[d]
+    create_dirs_if_needed(os.path.join(buildroot_prefix, INCLUDE_PREFIX), new_d)
+    os.system("cp -rv " + d + " " + os.path.join(buildroot_prefix, INCLUDE_PREFIX, new_d))
 
 for f in INCLUDE_FILES:
     file_exist_or_die(f)
