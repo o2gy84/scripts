@@ -24,6 +24,8 @@ def username_from_email(email):
     return name + "." + username_tail()
 
 only_email = True
+skip_first_line = False
+
 students_map = {}
 
 for f in sys.argv[1:]:
@@ -31,18 +33,18 @@ for f in sys.argv[1:]:
     rb = xlrd.open_workbook(f, formatting_info=True)
     sheet = rb.sheet_by_index(0)                        # select first list in .xls file
     for rownum in range(sheet.nrows):
-        if rownum == 0:                                 # skip first line
+        if rownum == 0 and skip_first_line:             # skip first line
             continue
         row = sheet.row_values(rownum)
 
         login = ""
         email = ""
         if only_email == True:
-            email = row[5].strip()
+            email = row[2].strip()
             login = username_from_email(email)
         else:
-            login = row[0].strip()
-            email = row[3].strip()
+            login = row[1].strip()
+            email = row[4].strip()
             
         students_map[login] = email
         print "login: ",login, ", email: ",email
