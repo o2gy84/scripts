@@ -12,7 +12,8 @@ sudo gem install fpm
 
 _CentOS:_
 ```
-sudo yum install ruby rubygems ruby-dev (or ruby-devel)
+sudo yum install rpm-build
+sudo yum install ruby rubygems ruby-devel
 sudo gem install fpm
 ```
 
