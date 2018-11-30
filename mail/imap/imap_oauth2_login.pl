@@ -17,8 +17,8 @@ my $token = 'Ienkvyrx5z0YM0xT.NR5lAidWOFc4szXzeaekYaZIkxjVAn46q6Y4.Crq9BTfQiLwJi
 my $server = 'imap.mail.yahoo.com';
 
 
-#my $token = 'ya29.1.AADtN_VMLof3_5ZaeFL_gAGFMJrOE5Byn9YvMXeqNRiCtTvDC2roTGGkGRXzrh_u';
-#my $user = 'timjaic@gmail.com';
+#my $token = 'TGGkGRXzrh_u';
+#my $user = 'imap.test@gmail.com';
 #my $server = 'imap.gmail.com';
 
 tcp_connect $server,993, sub {
